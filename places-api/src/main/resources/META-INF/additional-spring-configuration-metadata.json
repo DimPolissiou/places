@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "google.places-api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.key'"
+  },
+  {
+    "name": "google.places-api.search-radius",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.search-radius'"
+  },
+  {
+    "name": "google.places-api.min-rating",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.min-rating'"
+  },
+  {
+    "name": "google.places-api.match-open-now",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.match-open-now'"
+  },
+  {
+    "name": "google.places-api.match-icon-type",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.match-icon-type'"
+  }
+]}

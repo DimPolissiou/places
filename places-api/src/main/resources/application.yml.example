@@ -1,0 +1,47 @@
+google:
+  places-api:
+    key: {key}
+    search-radius: 5000 # Max 50000
+    minRating: 0 #3.5 # Scale 0-5
+    matchIconType: true
+    matchOpenNow: false
+    
+spring:
+  jackson:
+    default-property-inclusion: non-absent
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+      
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+security:
+  oauth2:
+    client:
+      client-id: acme
+      client-secret: acmesecret
+      scope: read,write
+      auto-approve-scopes: '.*'
+      
+facebook:
+  client:
+    clientId: {client id}
+    clientSecret: {client secret}
+    accessTokenUri: https://graph.facebook.com/oauth/access_token
+    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://graph.facebook.com/me
+    
+github:
+  client:
+    clientId: {client id}
+    clientSecret: {client secret}
+    accessTokenUri: https://github.com/login/oauth/access_token
+    userAuthorizationUri: https://github.com/login/oauth/authorize
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://api.github.com/user
