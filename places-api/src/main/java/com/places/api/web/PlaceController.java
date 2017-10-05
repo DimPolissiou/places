@@ -2,15 +2,19 @@ package com.places.api.web;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.places.api.domain.MyPlace;
 import com.places.api.domain.PlacesOfType;
 import com.places.api.service.GooglePlacesService;
+import com.places.api.web.resource.LocationResource;
 
 /**
  * @author dimpol
@@ -26,25 +30,36 @@ public class PlaceController {
 		this.google = google;
 	}
 	
-	@GetMapping("type")
-	public List<PlacesOfType> getAllByType(@RequestParam double lat, @RequestParam double lng, @RequestParam(defaultValue = "0") double radius) {
+	@PostMapping("type")
+	public List<PlacesOfType> getAllByType(@RequestBody @Valid LocationResource location) {
 		
-		if (radius <= 0 || radius > 50000) {
-			return google.getPlacesWithTypes(lat, lng);
+		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
+			return google.getPlacesWithTypes(location.getLat(), location.getLng());
 		} else {
-			return google.getPlacesWithTypes(lat, lng, radius);
+			return google.getPlacesWithTypes(location.getLat(), location.getLng(), location.getRadius());
 		}
 		
 	}
 	
-	@GetMapping("type/{type}")
+	@PostMapping("type/{type}")
 	public List<MyPlace> getType(@PathVariable(value="type") String type,
-			@RequestParam double lat, @RequestParam double lng, @RequestParam(defaultValue = "0") double radius) {
+			@RequestBody @Valid LocationResource location) {
 		
-		if (radius <= 0 || radius > 50000) {
-			return google.getPlacesOfType(lat, lng, type).getPlaces();
+		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
+			return google.getPlacesOfType(location.getLat(), location.getLng(), type).getPlaces();
 		} else {
-			return google.getPlacesOfType(lat, lng, type, radius).getPlaces();
+			return google.getPlacesOfType(location.getLat(), location.getLng(), type, location.getRadius()).getPlaces();
+		}
+		
+	}
+
+	@PostMapping
+	public List<MyPlace> getAll(@RequestBody @Valid LocationResource location) {
+		
+		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
+			return google.getPlaces(location.getLat(), location.getLng());
+		} else {
+			return google.getPlaces(location.getLat(), location.getLng(), location.getRadius());
 		}
 		
 	}
@@ -53,16 +68,5 @@ public class PlaceController {
 	public MyPlace details(@PathVariable(value="placeId") String placeId) {
 		return google.getPlaceDetails(placeId);
 	}
-	
-	@GetMapping
-	public List<MyPlace> getAll(@RequestParam double lat, @RequestParam double lng, @RequestParam(defaultValue = "0") double radius) {
-		
-		if (radius <= 0 || radius > 50000) {
-			return google.getPlaces(lat, lng);
-		} else {
-			return google.getPlaces(lat, lng, radius);
-		}
-		
-	 }
 
 }
