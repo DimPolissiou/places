@@ -9,14 +9,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.logicea.rest.exception.RestException;
 import com.places.api.domain.MyPlace;
 import com.places.api.domain.PlacesOfType;
 
 import se.walkercrou.places.GooglePlaces;
 import se.walkercrou.places.Param;
 import se.walkercrou.places.Place;
-import se.walkercrou.places.exception.GooglePlacesException;
 import se.walkercrou.places.exception.NoResultsFoundException;
 
 /**
@@ -83,9 +81,7 @@ public class GooglePlacesService {
 					.collect(Collectors.toList()));
 		} catch (NoResultsFoundException e) {
 			placesOfType.setPlaces(new ArrayList<MyPlace>());
-		} catch (GooglePlacesException e) {
-			throw new RestException(e.getStatusCode(), e.getErrorMessage());
-		}
+		} 
 		return placesOfType;
 	}
 	
@@ -120,12 +116,8 @@ public class GooglePlacesService {
 	public MyPlace getPlaceDetails(String placeId) {
 		Param[] extraParams = new Param[1];
 		extraParams[0] = Param.name("language").value("el");
-		try {
-			Place place = googlePlaces.getPlaceById(placeId, extraParams);
-			return MyPlace.convert(place);
-		} catch (GooglePlacesException e) {
-			throw new RestException(e.getStatusCode(), e.getErrorMessage());
-		}
+		Place place = googlePlaces.getPlaceById(placeId, extraParams);
+		return MyPlace.convert(place);
 	}
 
 	public String getGooglePlacesApiKey() {
