@@ -6,7 +6,6 @@
 	<groupId>com.places</groupId>
 	<artifactId>places-backend-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
 
 	<name>places-backend-api</name>
 	<description>RESTful API for the places backend</description>
