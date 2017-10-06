@@ -21,6 +21,7 @@ import com.places.api.web.resource.LocationResource;
  * @author dimpol
  *
  */
+@CrossOrigin
 @RequestMapping("place")
 @RestController
 public class PlaceController {
@@ -65,7 +66,6 @@ public class PlaceController {
 		
 	}
 	
-	@CrossOrigin
 	@GetMapping("/{placeId}")
 	public MyPlace details(@PathVariable(value="placeId") String placeId) {
 		return google.getPlaceDetails(placeId);

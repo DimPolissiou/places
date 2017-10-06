@@ -46,7 +46,9 @@ public class WebSecuirtyConfig extends WebSecurityConfigurerAdapter {
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/place**", "/place/**").permitAll().anyRequest().authenticated()
 			//	.and().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
 				.and().logout().logoutSuccessUrl("/").permitAll()
-				.and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+//				.and().cors().disable()
+				.and().csrf().disable()
+				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
 		// @formatter:on
 	}
 
