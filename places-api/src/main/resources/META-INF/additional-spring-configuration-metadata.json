@@ -23,5 +23,10 @@
     "name": "google.places-api.match-icon-type",
     "type": "java.lang.String",
     "description": "A description for 'google.places-api.match-icon-type'"
+  },
+  {
+    "name": "google.places-api.ignore-closed",
+    "type": "java.lang.String",
+    "description": "A description for 'google.places-api.ignore-closed'"
   }
 ]}

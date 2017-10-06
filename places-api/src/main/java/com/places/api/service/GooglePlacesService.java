@@ -15,6 +15,7 @@ import com.places.api.domain.PlacesOfType;
 import se.walkercrou.places.GooglePlaces;
 import se.walkercrou.places.Param;
 import se.walkercrou.places.Place;
+import se.walkercrou.places.Status;
 import se.walkercrou.places.exception.NoResultsFoundException;
 
 /**
@@ -36,6 +37,9 @@ public class GooglePlacesService {
 	
 	@Value("${google.places-api.minRating:0}")
 	private double minRating;
+	
+	@Value("${google.places-api.ignore-closed:false}")
+	private boolean ignoreClosed;
 	
 	@Value("${google.places-api.matchIconType:false}")
 	private boolean matchIconType;
@@ -74,6 +78,7 @@ public class GooglePlacesService {
 			placesOfType.setPlaces(googlePlaces.getNearbyPlaces(lat, lng, radius, extraParams)
 					.stream()
 					.filter( place -> place.getRating() >= getMinRating())
+					.filter( place -> !ignoreClosed && (place.getStatus() != Status.CLOSED))
 					.map( place -> MyPlace.convert(place))
 					.filter( place ->  !matchIconType || place.getIconType().equals(type) 
 														 || (type.equals("nightclub") && place.getIconType().equals("bar")))
