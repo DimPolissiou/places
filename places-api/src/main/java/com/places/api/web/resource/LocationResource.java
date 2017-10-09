@@ -20,6 +20,8 @@ public class LocationResource implements Serializable {
 	
 	private double radius=0;
 	
+	private int maxPrice=4;
+	
 	/**
 	 * @return the lat
 	 */
@@ -60,6 +62,14 @@ public class LocationResource implements Serializable {
 	 */
 	public void setRadius(double radius) {
 		this.radius = radius;
+	}
+
+	public int getMaxPrice() {
+		return maxPrice;
+	}
+
+	public void setMaxPrice(int maxPrice) {
+		this.maxPrice = maxPrice;
 	}
 	
 }

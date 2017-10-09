@@ -16,7 +16,7 @@ import se.walkercrou.places.GooglePlaces;
 import se.walkercrou.places.Param;
 import se.walkercrou.places.Place;
 import se.walkercrou.places.Status;
-import se.walkercrou.places.exception.NoResultsFoundException;
+import se.walkercrou.places.exception.GooglePlacesException;
 
 /**
  * @author dimpol
@@ -68,54 +68,44 @@ public class GooglePlacesService {
 		GooglePlacesService.googlePlaces = new GooglePlaces(getGooglePlacesApiKey());	
 	}
 	
-	public PlacesOfType getPlacesOfType(double lat, double lng, String type, double radius) {
+	public PlacesOfType getPlacesOfType(double lat, double lng, String type, double radius, int maxPrice) {
 		List<Param> params = new ArrayList<Param>(GooglePlacesService.commonParams);
 		params.add(Param.name("type").value(type));
+		if (ignoreClosed) params.add(Param.name("opennow").value("true"));
+		if (maxPrice < 4 && maxPrice>=0) params.add(Param.name("opennow").value(maxPrice));
 		Param[] extraParams = params.toArray(new Param[params.size()]);
 		PlacesOfType placesOfType = new PlacesOfType();
 		placesOfType.setType(type);
 		try {
-			placesOfType.setPlaces(googlePlaces.getNearbyPlaces(lat, lng, radius, extraParams)
+			placesOfType.setPlaces(googlePlaces.getNearbyPlaces(lat, lng, (radius==0)?getSearchRadius():radius, extraParams)
 					.stream()
 					.filter( place -> place.getRating() >= getMinRating())
 					.filter( place -> !ignoreClosed && (place.getStatus() != Status.CLOSED))
 					.map( place -> MyPlace.convert(place))
-					.filter( place ->  !matchIconType || place.getIconType().equals(type) 
-														 || (type.equals("nightclub") && place.getIconType().equals("bar")))
+//					.filter( place ->  !matchIconType || place.getIconType().equals(type) 
+//														 || (type.equals("nightclub") && place.getIconType().equals("bar")))
 					.sorted( (p1, p2) -> Double.compare(p2.getRating(), p1.getRating()))
 					.collect(Collectors.toList()));
-		} catch (NoResultsFoundException e) {
+		} catch (GooglePlacesException e) {
 			placesOfType.setPlaces(new ArrayList<MyPlace>());
 		} 
 		return placesOfType;
 	}
 	
-	public PlacesOfType getPlacesOfType(double lat, double lng, String type) {
-		return getPlacesOfType(lat, lng, type, getSearchRadius());
-	}
-	
-	public List<PlacesOfType> getPlacesWithTypes(double lat, double lng, double radius) {
+	public List<PlacesOfType> getPlacesWithTypes(double lat, double lng, double radius, int maxPrice) {
 		return acceptedTypes
-				.stream().map( (t) -> getPlacesOfType(lat, lng, t, radius))
+				.stream().map( (t) -> getPlacesOfType(lat, lng, t, radius, maxPrice))
 				.collect(Collectors.toList());
 	}
 	
-	public List<PlacesOfType> getPlacesWithTypes(double lat, double lng) {
-		return getPlacesWithTypes(lat, lng, getSearchRadius());
-	}
-	
-	public List<MyPlace> getPlaces(double lat, double lng, double radius) {
+	public List<MyPlace> getPlaces(double lat, double lng, double radius, int maxPrice) {
 		return acceptedTypes
 				.stream()
-				.map( (t) -> getPlacesOfType(lat, lng, t, radius).getPlaces())
+				.map( (t) -> getPlacesOfType(lat, lng, t, radius, maxPrice).getPlaces())
 				.flatMap(List::stream)
 				.distinct()
 				.sorted( (p1, p2) -> Double.compare(p2.getRating(), p1.getRating()))
 				.collect(Collectors.toList());
-	}
-	
-	public List<MyPlace> getPlaces(double lat, double lng) {
-		return getPlaces(lat, lng, getSearchRadius());
 	}
 	
 	public MyPlace getPlaceDetails(String placeId) {

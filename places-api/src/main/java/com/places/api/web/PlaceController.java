@@ -35,11 +35,9 @@ public class PlaceController {
 	@PostMapping("type")
 	public List<PlacesOfType> getAllByType(@RequestBody @Valid LocationResource location) {
 		
-		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
-			return google.getPlacesWithTypes(location.getLat(), location.getLng());
-		} else {
-			return google.getPlacesWithTypes(location.getLat(), location.getLng(), location.getRadius());
-		}
+		double radius = location.getRadius();
+		if (radius <= 0 || radius > 50000) radius = 0;
+		return google.getPlacesWithTypes(location.getLat(), location.getLng(), radius, location.getMaxPrice());
 		
 	}
 	
@@ -47,22 +45,18 @@ public class PlaceController {
 	public List<MyPlace> getType(@PathVariable(value="type") String type,
 			@RequestBody @Valid LocationResource location) {
 		
-		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
-			return google.getPlacesOfType(location.getLat(), location.getLng(), type).getPlaces();
-		} else {
-			return google.getPlacesOfType(location.getLat(), location.getLng(), type, location.getRadius()).getPlaces();
-		}
+		double radius = location.getRadius();
+		if (radius <= 0 || radius > 50000) radius = 0;
+			return google.getPlacesOfType(location.getLat(), location.getLng(), type, radius, location.getMaxPrice()).getPlaces();
 		
 	}
 
 	@PostMapping
 	public List<MyPlace> getAll(@RequestBody @Valid LocationResource location) {
 		
-		if (location.getRadius() <= 0 || location.getRadius() > 50000) {
-			return google.getPlaces(location.getLat(), location.getLng());
-		} else {
-			return google.getPlaces(location.getLat(), location.getLng(), location.getRadius());
-		}
+		double radius = location.getRadius();
+		if (radius <= 0 || radius > 50000) radius = 0;
+			return google.getPlaces(location.getLat(), location.getLng(), radius, location.getMaxPrice());
 		
 	}
 	
