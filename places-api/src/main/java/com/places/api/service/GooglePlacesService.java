@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -128,14 +129,16 @@ public class GooglePlacesService {
 		return MyPlace.convert(place);
 	}
 	
-	public String getPlacePhoto(String placeId) throws IOException {
+	public Optional<String> getPlacePhoto(String placeId) throws IOException {
 		String filename = placeId + ".jpg";
 		String path = getBasePhotoDirectory() + File.separator + filename;
 		File file = new File(path);
 		if(file.exists()) { 
-		    return filename;
+		    return Optional.of(filename);
 		}
 		Place place = googlePlaces.getPlaceById(placeId);
+		if (place.getPhotos().size()==0)
+			return Optional.empty();
 		Photo photo = place.getPhotos().get(0);
 		RestTemplate restTemplate = new RestTemplate();
 		
@@ -149,7 +152,7 @@ public class GooglePlacesService {
 		byte[] img = restTemplate.getForObject(uri, byte[].class);
 		file.createNewFile();
 		Files.write(file.toPath(), img);
-		return filename;
+		return Optional.of(filename);
 	}
 	
 	@Bean

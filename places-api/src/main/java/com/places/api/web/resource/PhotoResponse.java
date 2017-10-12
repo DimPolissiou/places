@@ -16,11 +16,11 @@ public class PhotoResponse implements Serializable {
 		this.filename = filename;
 	}
 
-	public String getPath() {
+	public String getFilename() {
 		return filename;
 	}
 
-	public void setPath(String filename) {
+	public void setFilename(String filename) {
 		this.filename = filename;
 	}
 	

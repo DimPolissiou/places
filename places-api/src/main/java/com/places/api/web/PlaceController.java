@@ -2,6 +2,7 @@ package com.places.api.web;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -65,8 +66,10 @@ public class PlaceController {
 	
 	@GetMapping(value = "/photo/{placeId}")
 	public ResponseEntity<PhotoResponse> photo(@PathVariable(value="placeId") String placeId) throws IOException {
-		String filename = google.getPlacePhoto(placeId);
-		return ResponseEntity.ok().body(new PhotoResponse(filename));
+		Optional<String> filename = google.getPlacePhoto(placeId);
+		if (filename.isPresent())
+			return ResponseEntity.ok().body(new PhotoResponse(filename.get()));
+		return ResponseEntity.notFound().build();
 	}
 
 	@GetMapping("/{placeId}")
