@@ -1,5 +1,9 @@
 package com.places.api.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,13 +11,19 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.places.api.domain.MyPlace;
 import com.places.api.domain.PlacesOfType;
 
 import se.walkercrou.places.GooglePlaces;
 import se.walkercrou.places.Param;
+import se.walkercrou.places.Photo;
 import se.walkercrou.places.Place;
 import se.walkercrou.places.Status;
 import se.walkercrou.places.exception.GooglePlacesException;
@@ -46,6 +56,9 @@ public class GooglePlacesService {
 	
 	@Value("${google.places-api.matchOpenNow:true}")
 	private boolean matchOpenNow;
+	
+	@Value("${google.places-api.base-photo-directory}")
+	private String basePhotoDirectory;
 	
 	public GooglePlacesService() {
 		if (GooglePlacesService.commonParams == null) {
@@ -114,6 +127,39 @@ public class GooglePlacesService {
 		Place place = googlePlaces.getPlaceById(placeId, extraParams);
 		return MyPlace.convert(place);
 	}
+	
+	public String getPlacePhoto(String placeId) throws IOException {
+		String path = getBasePhotoDirectory() + File.separator + placeId + ".jpg";
+		File file = new File(path);
+		if(file.exists()) { 
+		    return path;
+		}
+		Place place = googlePlaces.getPlaceById(placeId);
+		Photo photo = place.getPhotos().get(0);
+		RestTemplate restTemplate = new RestTemplate();
+		
+		URI uri = UriComponentsBuilder.fromHttpUrl("https://maps.googleapis.com/maps/api/place/photo")
+				.queryParam("key", googlePlaces.getApiKey())
+				.queryParam("photoreference", photo.getReference())
+				.queryParam("maxheight", photo.getHeight())
+				.queryParam("maxwidth", photo.getWidth())
+				.build().encode().toUri();
+		
+		byte[] img = restTemplate.getForObject(uri, byte[].class);
+		file.createNewFile();
+		Files.write(file.toPath(), img);
+		return path;
+	}
+	
+	@Bean
+	public RestTemplate restTemplate(List<HttpMessageConverter<?>> messageConverters) {
+	    return new RestTemplate(messageConverters);
+	}
+
+	@Bean
+	public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
+	    return new ByteArrayHttpMessageConverter();
+	}
 
 	public String getGooglePlacesApiKey() {
 		return googlePlacesApiKey;
@@ -157,6 +203,14 @@ public class GooglePlacesService {
 
 	public void setMatchOpenNow(boolean matchOpenNow) {
 		this.matchOpenNow = matchOpenNow;
+	}
+
+	public String getBasePhotoDirectory() {
+		return basePhotoDirectory;
+	}
+
+	public void setBasePhotoDirectory(String basePhotoDirectory) {
+		this.basePhotoDirectory = basePhotoDirectory;
 	}
 
 }

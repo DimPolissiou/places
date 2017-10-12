@@ -1,9 +1,11 @@
 package com.places.api.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import com.places.api.domain.MyPlace;
 import com.places.api.domain.PlacesOfType;
 import com.places.api.service.GooglePlacesService;
 import com.places.api.web.resource.LocationResource;
+import com.places.api.web.resource.PhotoResponse;
 
 /**
  * @author dimpol
@@ -60,6 +63,16 @@ public class PlaceController {
 		
 	}
 	
+	@GetMapping(value = "/photo/{placeId}")
+	public ResponseEntity<PhotoResponse> photo(@PathVariable(value="placeId") String placeId) {
+		try {
+			String path = google.getPlacePhoto(placeId);
+			return ResponseEntity.ok().body(new PhotoResponse(path));
+		} catch (IOException e) {
+			return ResponseEntity.status(500).body(null);
+		}
+	}
+
 	@GetMapping("/{placeId}")
 	public MyPlace details(@PathVariable(value="placeId") String placeId) {
 		return google.getPlaceDetails(placeId);
