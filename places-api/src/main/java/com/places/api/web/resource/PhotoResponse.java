@@ -10,18 +10,18 @@ public class PhotoResponse implements Serializable {
 
 	private static final long serialVersionUID = 5263473624849246943L;
 
-	private String path;
+	private String filename;
 	
-	public PhotoResponse(String path) {
-		this.path = path;
+	public PhotoResponse(String filename) {
+		this.filename = filename;
 	}
 
 	public String getPath() {
-		return path;
+		return filename;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setPath(String filename) {
+		this.filename = filename;
 	}
 	
 }

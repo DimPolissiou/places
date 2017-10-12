@@ -64,13 +64,9 @@ public class PlaceController {
 	}
 	
 	@GetMapping(value = "/photo/{placeId}")
-	public ResponseEntity<PhotoResponse> photo(@PathVariable(value="placeId") String placeId) {
-		try {
-			String path = google.getPlacePhoto(placeId);
-			return ResponseEntity.ok().body(new PhotoResponse(path));
-		} catch (IOException e) {
-			return ResponseEntity.status(500).body(null);
-		}
+	public ResponseEntity<PhotoResponse> photo(@PathVariable(value="placeId") String placeId) throws IOException {
+		String filename = google.getPlacePhoto(placeId);
+		return ResponseEntity.ok().body(new PhotoResponse(filename));
 	}
 
 	@GetMapping("/{placeId}")

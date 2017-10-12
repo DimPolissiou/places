@@ -129,10 +129,11 @@ public class GooglePlacesService {
 	}
 	
 	public String getPlacePhoto(String placeId) throws IOException {
-		String path = getBasePhotoDirectory() + File.separator + placeId + ".jpg";
+		String filename = placeId + ".jpg";
+		String path = getBasePhotoDirectory() + File.separator + filename;
 		File file = new File(path);
 		if(file.exists()) { 
-		    return path;
+		    return filename;
 		}
 		Place place = googlePlaces.getPlaceById(placeId);
 		Photo photo = place.getPhotos().get(0);
@@ -148,7 +149,7 @@ public class GooglePlacesService {
 		byte[] img = restTemplate.getForObject(uri, byte[].class);
 		file.createNewFile();
 		Files.write(file.toPath(), img);
-		return path;
+		return filename;
 	}
 	
 	@Bean
